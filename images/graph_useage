@@ -1,0 +1,200 @@
+libWFDimx6x.so - OpenWF Display driver for Freescale i.MX6 family.
+
+Display IDs:
+  1 - IPU1 DI0 (see also ipu-index)
+  2 - IPU2 DI0 (not available on Solo or DualLite)
+
+Pipeline IDs:
+  1 - IPU1 DP_BG (RGB or YUY2)
+  2 - IPU1 DP_FG (RGB or YUY2)
+  3 - IPU2 DP_BG (RGB or YUY2)
+  4 - IPU2 DP_FG (RGB or YUY2)
+
+graphics.conf settings (for "khronos" / "wfd device 1"):
+  gpu-contiguousMB: minimum contiguous memory pool size for Vivante GPU
+               (size in MB; default is 248, recommended 64..248)
+  gpu-internalPoolMB: internal memory pool size for Vivante GPU
+               (size in MB; default is 6)
+  gpu-sharedPoolMB: shared memory pool size for Vivante GPU
+        (size in MB; default is 2)
+  gpu-contiguousOnly: disable virtual memory in Vivante GPU driver (for debugging)
+        (possible values: "true", "false"; default true)
+  gpu-slogUsageInterval: write contiguous memory stats to slog every N seconds
+        (minimum number of seconds between slogs; 0 disables; default 0
+  gpu-pm-enable: enable GPU power management (SoC PMU control)
+        (possible values: "true", "false"; default false)
+  gpu-pm-force-power-on: GPU power management does not disable power.
+        This is required if the VPU is in use due to shared power supply.
+        (possible values: "true", "false"; default false)
+  gpu-powerManagement: GPU power management (internal GPU power states)
+        (possible values: "1", "0"; default 1)
+  dynamic-pipelines: disable pipelines when not in use
+        (possible values: "1", "0"; default 0)
+  ipu-index: swap IPU 1 and 2 (the other can be used for capture)
+               (possible values: "1", "2"; default 1)
+  vsync-failure-limit: abort screen after consecutive vsync timeouts
+        (number of timeouts: 0 means unlimited; default 0)
+  wfd-port-hdmi: select WFD port for HDMI output
+               (possible values: unset or "0", "1", "2")
+  wfd-port-lvds0: select WFD port for LVDS0 output
+               (possible values: unset or "0", "1", "2")
+  wfd-port-lvds1: select WFD port for LVDS1 output
+               (possible values: unset or "0", "1", "2")
+  wfd-port-parallel0: select WFD port for parallel 0 output (see note below)
+        (possible values: unset or "0", "1", "2")
+  wfd-port-parallel1: select WFD port for parallel 1 output (see note below)
+        (possible values: unset or "0", "1", "2")
+
+  Mapping between WFD ports and displays.
+  | WFDPortId | IPU   | DI | Pipeline |
+  |   1       |   1   |  0 | 1, 2     |
+  |   2       |   2   |  0 | 3, 4     | (not available on Dual-Lite or Solo)
+  |   3       |   1   |  1 | 5        | (no DP, no YUV, no CSCGamma)
+  |   4       |   2   |  1 | 6        | (port 2 and port 3 restrictions combined)
+
+  Notes related to mapping between WFD ports and displays
+  # 1: It's possible to connect the same WFD port to multiple display
+  # outputs IF and ONLY IF the displays have compatible timing and format.
+  # HDMI is 24 bit RGB888.
+  # LVDS is either 24 bit RGB888 or 18 bit sparse RGB666.
+  # The Okaya 7" display panel for the SabreLite is 18 bit packed RGB666,
+  # and has small delays on its clock edges.
+  # Connecting multiple incompatible displays to the same WFD port is
+  # NOT SUPPORTED and WILL NOT WORK.
+  # The driver does not check these constraints.
+
+  # 2:  if a WFD port is connected to LVDS, then the clock for that
+  # port will be derived from the LDB clock source instead of the IPU HSP clock,
+  # regardless of what other display types are connected to the port.
+  # This may result in small clock frequency changes (or large ones if the
+  # BSP has configured the LDB clock source to a fixed frequency).
+
+  # 3:  All available WFD ports are always present, whether
+  # there is a display output assigned to them or not.  When
+  # there is no display output assigned the hardware will not be used.
+
+  # 4:  For compatibility with legacy config files, "display-type = xxx"
+  # is exactly equivalent to "wfd-port-xxx = 1"; however, if any wfd-port
+  # option is used, display-type is ignored.
+
+  # 5:  The semantics of ipu-index have expanded.
+  # ipu-index = 2 swaps the IPU positions in the WFD port mappings
+  # described above, so IPU2 will be used instead of IPU1 and vice versa.
+  # All other values of ipu-index, including the missing value, have no effect.
+  # IPUs will be used if and only if the corresponding WFD port in the table
+  # above is mapped to an output.
+
+  # 6:  For compatibility with legacy config files, if no options are
+  # specified, "display-type = lvds1" (which is equivalent to
+  # "wfd-port-lvds1 = 1") is assumed.  At least one active WFD port is
+  # always required.
+
+  # 7:  Outputs are only configured if there is a WFD port assigned
+  # to them.  Unconfigured output hardware is not disturbed.  In particular,
+  # u-boot may enable outputs beyond those listed in graphics.conf, and
+  # these outputs may remain active.
+
+  # 8:  Ports 3 and 4 (and pipelines 5 and 6) are not yet implemented.
+
+  Set "wfd-dlls = libwfdcfg-VARIANT.so libimx6xCSCgamma-VARIANT.so libWFDimx6x.so"
+  (replacing VARIANT as appropriate; e.g., "libwfdcfg-hdmi.so libimx6xCSCgamma-generic.so").
+
+  Set "gpu-dlls = libGalcore-3dvg.so" or "libGalcore-gc355.so" depending
+  on hardware.  i.MX6 Dual and Quad can use gc355 (hardware VG) or 3dvg
+  (VG emulation using 3D core); i.MX6 DualLite and Solo must use 3dvg
+  as they do not have a hardware VG implementation.
+
+  The "ipu-index" parameter swaps the two IPUs, so IPU2 is treated
+  as if it was IPU1 and vice versa.  This affects all instances
+  where IPU2 is mentioned above (e.g. pipeline 3 becomes IPU1 DP_FG).
+
+  The "dynamic-pipelines" parameter controls what happens in cases where
+  one pipeline is disabled, but the other is enabled.  By default, the
+  WFD driver creates a blank image buffer and displays this buffer when
+  one of the pipelines is disabled.  This keeps both pipelines in the DP
+  active and avoids hardware reconfigurations which may produce visible
+  artifacts.  When the dynamic-pipelines option is enabled, unused
+  pipelines will be disabled in the DP hardware if this can be done
+  without altering the output image.  This reduces the memory bandwidth
+  consumed by the DP when one pipeline is disabled, but creates a visible
+  artifact should the second pipeline be enabled later.
+
+  The "ldb-clock-sel" parameter is deprecated.  The driver now reads
+  the currently selected clock from the mux register and ignores the
+  parameter.
+
+  The GPU driver will allocate at least the amount of memory specified.
+  If application memory requests exceed the minimum, the driver will
+  attempt to allocate additional memory, possibly with lower performance
+  than that of the initial memory pool.
+
+  The following control debug information written to slog.
+  They have no effect in the non-debug build of the driver.
+            
+  debug-alloc: memory allocation and buffer overrun checking
+  debug-buffer: first 8 words of each image buffer
+  debug-cscgamma: libCSCgamma API calls, parameters, and results
+  debug-idmac: IDMAC parameters
+  debug-ipu: IPU activity
+  debug-isr: IRQ statistics
+  debug-lvds: LVDS and LDB setup
+  debug-pipeline: WFD pipeline state and changes
+  debug-register: Report (some) register writes to tracelog (NOT slog)
+  debug-resize: IPU resizer state and changes
+  debug-trace: logs entry into each WFD function
+  debug-misc: all other debug slog messages
+
+  The debug options control only the slog output of the debugging
+  features.  Some debug features (e.g. the memory range checking for
+  debug-alloc) are always enabled in the debug build of the driver, and
+  may slog additional messages not controlled by the debug- options if
+  bugs are detected.
+
+  The "wfd-port-parallel0" and "wfd-port-parallel1" options do not change
+  display pinmux configuration.  This must be set up by the board BSP code.
+  These options merely enable the IPU outputs for these WFD ports in cases
+  where there is no LVDS or HDMI display configured.
+
+Required libraries:
+  libimx6xCSCgamma-VARIANT.so (see above)
+  libwfdcfg-VARIANT.so (see above)
+  libm.so
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

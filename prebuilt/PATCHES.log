@@ -1,0 +1,60 @@
+
+Dependencies Summary:
+
+	PSP_networking_br660_be660-966_net-core-armle-v7-sta.tar
+
+	PSP_networking_br660_be660-966_net-libnetdrvr-armle-v7-sta.tar
+
+
+
+
+***** Processing Archive: PSP_networking_br660_be660-966_net-core-armle-v7-sta.tar *****
+
+patches/
+patches/660-966/
+patches/660-966/manifest
+patches/660-966/version
+patches/660-966/target/
+patches/660-966/target/qnx6/
+patches/660-966/target/qnx6/armle-v7/
+patches/660-966/target/qnx6/armle-v7/usr/
+patches/660-966/target/qnx6/armle-v7/usr/sbin/
+patches/660-966/target/qnx6/armle-v7/usr/sbin/dhcp.client
+patches/660-966/target/qnx6/armle-v7/usr/sbin/pppd
+patches/660-966/target/qnx6/armle-v7/usr/sbin/autoipd
+patches/660-966/target/qnx6/armle-v7/usr/sbin/rtsold
+patches/660-966/target/qnx6/armle-v7/usr/sbin/rtadvd
+patches/660-966/target/qnx6/armle-v7/lib/
+patches/660-966/target/qnx6/armle-v7/lib/dll/
+patches/660-966/target/qnx6/armle-v7/lib/dll/devnp-shim.so
+patches/660-966/target/qnx6/armle-v7/lib/dll/lsm-slip.so
+patches/660-966/target/qnx6/armle-v7/sbin/
+patches/660-966/target/qnx6/armle-v7/sbin/slattach
+patches/660-966/target/qnx6/armle-v7/sbin/io-pkt-v4-hc
+patches/660-966/target/qnx6/armle-v7/sbin/io-pkt-v6-hc
+patches/660-966/target/qnx6/armle-v7/sbin/pppoectl
+patches/660-966/target/qnx6/armle-v7/sbin/io-pkt-v4
+
+***** Processing Archive: PSP_networking_br660_be660-966_net-libnetdrvr-armle-v7-sta.tar *****
+
+patches/
+patches/660-966/
+patches/660-966/manifest
+patches/660-966/version
+patches/660-966/target/
+patches/660-966/target/qnx6/
+patches/660-966/target/qnx6/usr/
+patches/660-966/target/qnx6/usr/include/
+patches/660-966/target/qnx6/usr/include/netdrvr/
+patches/660-966/target/qnx6/usr/include/netdrvr/common.h
+patches/660-966/target/qnx6/usr/include/netdrvr/mdi.h
+patches/660-966/target/qnx6/usr/include/netdrvr/eth.h
+patches/660-966/target/qnx6/usr/include/netdrvr/nicsupport.h
+patches/660-966/target/qnx6/usr/include/netdrvr/support.h
+patches/660-966/target/qnx6/usr/include/netdrvr/ptp.h
+patches/660-966/target/qnx6/usr/include/netdrvr/nic_mutex.h
+patches/660-966/target/qnx6/armle-v7/
+patches/660-966/target/qnx6/armle-v7/usr/
+patches/660-966/target/qnx6/armle-v7/usr/lib/
+patches/660-966/target/qnx6/armle-v7/usr/lib/libnetdrvr.a
+patches/660-966/target/qnx6/armle-v7/usr/lib/libnetdrvrS.a

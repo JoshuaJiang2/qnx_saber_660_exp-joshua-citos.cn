@@ -1,0 +1,4 @@
+#img size = sector_number * 512 B
+#qnx6fs img size should equal disk partition's size
+[num_sectors=40k]
+../install

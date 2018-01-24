@@ -1,0 +1,13 @@
+#!/bin/sh
+# script to build a binary IPL and boot image for i.MX6x Sabre-ARD board. 
+# NOTE the image (ipl-ifs-mx6x-sabreARD.bin) must be built as binary, i.e. [virtual=armle,binary] in the buildfile 
+set -v
+#不能从install 目录下获取原始ipl，那里的是从prebuild目录拷贝过去的，需要直接从编译目录下拿
+#2018/1/9===joshuajiang
+#	Convert IPL into BINARY format
+${QNX_HOST}/usr/bin/ntoarmv7-objcopy --input-format=elf32-littlearm --output-format=binary ../src/hardware/ipl/boards/mx6x-sabreARD/arm/le.v7/ipl-mx6x-sabreARD ./tmp-ipl-mx6x-sabreARD.bin
+
+#	Pad BINARY IPL
+mkrec  -ffull -r tmp-ipl-mx6x-sabreARD.bin > ipl-mx6x-sabreARD.bin
+
+rm tmp-ipl-mx6x-sabreARD.bin
